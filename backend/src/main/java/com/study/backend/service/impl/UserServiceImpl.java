@@ -3,6 +3,7 @@ package com.study.backend.service.impl;
 import com.study.backend.mapper.UserMapper;
 import com.study.backend.pojo.User;
 import com.study.backend.service.UserService;
+import com.study.backend.utils.Md5Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void register(String username, String password) {
         // 加密
-
+        String md5String = Md5Util.getMD5String(password);
         // 添加
+        userMapper.add(username, md5String);
     }
 }
