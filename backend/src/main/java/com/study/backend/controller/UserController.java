@@ -3,13 +3,16 @@ package com.study.backend.controller;
 import com.study.backend.pojo.Result;
 import com.study.backend.pojo.User;
 import com.study.backend.service.UserService;
+import com.study.backend.utils.JwtUtil;
 import com.study.backend.utils.Md5Util;
+import com.study.backend.utils.ThreadLocalUtil;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author SummCoder
@@ -47,8 +50,27 @@ public class UserController {
         }
         // 判断密码是否正确
         if (Md5Util.checkPassword(password, user.getPassword())) {
-            return Result.success("");
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", user.getId());
+            claims.put("username", user.getUsername());
+            String token = JwtUtil.genToken(claims);
+            return Result.success(token);
         }
         return Result.error("密码错误");
+    }
+
+    @GetMapping("/userInfo")
+    public Result<User> userInfo() {
+        // 根据已登录用户名查询用户
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String username = (String) map.get("username");
+        User user = userService.findByUserName(username);
+        return Result.success(user);
+    }
+
+    @PutMapping("/update")
+    public Result update(@RequestBody @Validated User user) {
+        userService.update(user);
+        return Result.success();
     }
 }
