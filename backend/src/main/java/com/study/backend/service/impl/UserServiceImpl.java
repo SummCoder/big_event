@@ -4,10 +4,12 @@ import com.study.backend.mapper.UserMapper;
 import com.study.backend.pojo.User;
 import com.study.backend.service.UserService;
 import com.study.backend.utils.Md5Util;
+import com.study.backend.utils.ThreadLocalUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 /**
  * @author SummCoder
@@ -38,5 +40,19 @@ public class UserServiceImpl implements UserService {
     public void update(User user) {
         user.setUpdateTime(LocalDateTime.now());
         userMapper.update(user);
+    }
+
+    @Override
+    public void updateAvatar(String avatarUrl) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer id = (Integer) map.get("id");
+        userMapper.updateAvatar(avatarUrl, id);
+    }
+
+    @Override
+    public void updatePwd(String newPwd) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer id = (Integer) map.get("id");
+        userMapper.updatePwd(Md5Util.getMD5String(newPwd), id);
     }
 }
