@@ -82,6 +82,7 @@ public class UserController {
         return Result.success();
     }
 
+    @PatchMapping("/updatePwd")
     public Result updatePwd(@RequestBody Map<String, String> params) {
         String oldPwd = params.get("old_pwd");
         String newPwd = params.get("new_pwd");
